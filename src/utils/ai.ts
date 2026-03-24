@@ -105,13 +105,23 @@ Angolo: ${tema.angolo || 'Non specificato'}`;
   const textResponse = data.content?.[0]?.text || '';
   
   // Clean JSON response if Claude added markdown blocks
-  const jsonStr = textResponse.replace(/^```json/m, '').replace(/```$/m, '').trim();
+  let jsonStr = textResponse.trim();
+  
+  // Trova la prima { e l'ultima } per estrarre solo l'oggetto JSON
+  const startIdx = jsonStr.indexOf('{');
+  const endIdx = jsonStr.lastIndexOf('}');
+  
+  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+    jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+  } else {
+    jsonStr = jsonStr.replace(/^```json/m, '').replace(/```$/m, '').trim();
+  }
   
   try {
     return JSON.parse(jsonStr);
   } catch (e) {
-    console.error("Failed to parse Claude JSON", jsonStr);
-    throw new Error('Claude non ha restituito un JSON valido');
+    console.error("Failed to parse Claude JSON", jsonStr, textResponse);
+    throw new Error('Claude non ha restituito un JSON valido. Vedi console per dettagli.');
   }
 }
 
