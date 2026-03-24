@@ -25,11 +25,7 @@ export default function Home() {
     e.preventDefault();
     if (!formData.titolo || !formData.oneLiner) return;
     
-    const apiKey = localStorage.getItem('athenometro_settings');
-    if (!apiKey) {
-      setAiError('Non hai configurato la Action Key di Anthropic. Vai in Impostazioni.');
-      return;
-    }
+    
 
     setIsAiLoading(true);
     setAiError(null);
