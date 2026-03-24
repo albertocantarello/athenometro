@@ -1,23 +1,17 @@
 import { useState, useEffect } from 'react';
-import { getApiKey, saveApiKey, getAiModel, saveAiModel } from '../utils/storage';
+import { getAiModel, saveAiModel } from '../utils/storage';
 import { getAvailableModelsFromAPI } from '../utils/ai';
-import { KeyRound, CheckCircle, ShieldAlert, Cpu, RefreshCw } from 'lucide-react';
+import { CheckCircle, ShieldAlert, Cpu, RefreshCw } from 'lucide-react';
 
 export default function Settings() {
-  const [apiKey, setKey] = useState('');
   const [aiModel, setModel] = useState('');
   const [saved, setSaved] = useState(false);
   const [dynamicModels, setDynamicModels] = useState<any[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
 
   useEffect(() => {
-    const storedKey = getApiKey();
-    setKey(storedKey);
     setModel(getAiModel());
-    
-    if (storedKey) {
-       loadModels();
-    }
+    loadModels();
   }, []);
 
   const loadModels = async () => {
@@ -31,7 +25,6 @@ export default function Settings() {
   };
 
   const handleSave = () => {
-    saveApiKey(apiKey);
     saveAiModel(aiModel);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -45,28 +38,11 @@ export default function Settings() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8 space-y-6">
-        <div className="flex items-start gap-4 p-4 bg-blue-50 text-blue-900 rounded-lg">
-          <ShieldAlert className="flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-4 p-4 bg-green-50 text-green-900 rounded-lg">
+          <ShieldAlert className="flex-shrink-0 mt-0.5 text-green-600" />
           <div className="text-sm leading-relaxed">
-            <strong>Privacy & Sicurezza:</strong> La chiave API viene memorizzata esclusivamente nel tuo browser (`localStorage`). Non viene trasmessa a nessun database esterno, ma solo direttamente ai server di Anthropic in occasione di ogni valutazione AI.
+            <strong>Infrastruttura Sicura:</strong> L'accesso alle API di Anthropic è ora totalmente gestito tramite un Cloudflare Worker protetto. Nessuna chiave API viene esposta nel browser dei tuoi collaboratori e l'intero traffico è privato.
           </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="block font-medium text-gray-900 flex items-center gap-2">
-            <KeyRound size={18} />
-            Anthropic API Key
-          </label>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => setKey(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 bg-gray-50 text-gray-900 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none font-mono"
-            placeholder="sk-ant-api03-..."
-          />
-          <p className="text-xs text-gray-700 font-medium mt-2">
-            Puoi ottenere una chiave dalla <a href="https://console.anthropic.com/" target="_blank" rel="noreferrer" className="text-primary underline font-bold hover:text-blue-700">Console di Anthropic</a>.
-          </p>
         </div>
 
         <div className="space-y-2">
@@ -77,7 +53,7 @@ export default function Settings() {
             </label>
             <button 
               onClick={loadModels}
-              disabled={isLoadingModels || !apiKey}
+              disabled={isLoadingModels}
               className="text-xs flex items-center gap-1 text-primary hover:text-blue-700 disabled:opacity-50"
             >
               <RefreshCw size={12} className={isLoadingModels ? "animate-spin" : ""} />
@@ -119,7 +95,7 @@ export default function Settings() {
           onClick={handleSave}
           className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary text-white font-medium rounded-lg hover:bg-[#12273f] transition-colors"
         >
-          {saved ? <><CheckCircle size={18}/> Salvato con successo!</> : 'Salva Chiave API'}
+          {saved ? <><CheckCircle size={18}/> Salvato con successo!</> : 'Salva Impostazioni'}
         </button>
       </div>
     </div>
